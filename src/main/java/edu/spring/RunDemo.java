@@ -1,13 +1,15 @@
 package edu.spring;
 
-import edu.spring.config.AppConfig;
 import edu.spring.entities.Game;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class RunDemo {
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext context =
-                new AnnotationConfigApplicationContext(AppConfig.class);
+//        AnnotationConfigApplicationContext context =
+//                new AnnotationConfigApplicationContext(AppConfig.class);
+
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
 
         Game game = context.getBean("game", Game.class);
         System.out.println(game.playGame());
