@@ -1,6 +1,8 @@
-package edu.spring.entities;
+package entities;
 
 import edu.spring.config.AppConfig;
+import edu.spring.entities.Game;
+import edu.spring.entities.Team;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ public class BaseballGameTest {
     private ApplicationContext ctx;
 
     @Test
-    public void testPlayGame() throws Exception {
+    public void testPlayGame() {
         String home = game.getHomeTeam().getName();
         String away = game.getAwayTeam().getName();
         String result = game.playGame();

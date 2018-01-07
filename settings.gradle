@@ -1,2 +1,4 @@
 rootProject.name = 'SpringApp'
+include 'Account'
+include 'Baseball'
 
