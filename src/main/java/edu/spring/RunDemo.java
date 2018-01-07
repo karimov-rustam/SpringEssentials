@@ -10,17 +10,20 @@ public class RunDemo {
         AnnotationConfigApplicationContext context =
                 new AnnotationConfigApplicationContext(AppConfig.class);
 
-        Game game = context.getBean("game", Game.class);
-        System.out.println(game.playGame());
+        Game game1 = context.getBean("game", Game.class);
+        System.out.println(game1);
 
+        Game game2 = context.getBean("game", Game.class);
         Team royals = context.getBean("royals", Team.class);
-        game.setAwayTeam(royals);
-        System.out.println(game.playGame());
+        game2.setAwayTeam(royals);
+        System.out.println(game2);
 
-        System.out.println("There are " + context.getBeanDefinitionCount() + " beans");
-        for (String name :
-                context.getBeanDefinitionNames()) {
-            System.out.println(name);
-        }
+        System.out.println(game1);
+
+//        System.out.println("There are " + context.getBeanDefinitionCount() + " beans");
+//        for (String name :
+//                context.getBeanDefinitionNames()) {
+//            System.out.println(name);
+//        }
     }
 }

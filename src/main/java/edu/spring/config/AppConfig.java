@@ -2,11 +2,13 @@ package edu.spring.config;
 
 import edu.spring.entities.BaseballGame;
 import edu.spring.entities.Game;
+import edu.spring.entities.RedSox;
 import edu.spring.entities.Team;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -21,10 +23,15 @@ public class AppConfig {
     @Autowired
     private List<Team> teams;
 
-    @Bean
+    @Bean @Scope("prototype")
     public Game game() {
-        BaseballGame baseballGame = new BaseballGame(teams.get(0), teams.get(1));
+        BaseballGame baseballGame = new BaseballGame(redSox(), teams.get(1));
         baseballGame.setDataSource(dataSource);
         return baseballGame;
+    }
+
+    @Bean
+    public Team redSox() {
+        return new RedSox();
     }
 }
