@@ -1,5 +1,7 @@
 package edu.spring.entities;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 public class BaseballGame implements Game {
@@ -12,6 +14,16 @@ public class BaseballGame implements Game {
     public BaseballGame(Team homeTeam, Team awayTeam) {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
+    }
+
+    @PostConstruct
+    public void startGame() {
+        System.out.println("Playing National Athem");
+    }
+
+    @PreDestroy
+    public void endGame() {
+        System.out.println("Sending highlights to MLB");
     }
 
     public void setDataSource(DataSource dataSource) {

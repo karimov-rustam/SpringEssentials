@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -23,7 +22,8 @@ public class AppConfig {
     @Autowired
     private List<Team> teams;
 
-    @Bean @Scope("prototype")
+    @Bean
+//    @Scope("prototype")
     public Game game() {
         BaseballGame baseballGame = new BaseballGame(redSox(), teams.get(1));
         baseballGame.setDataSource(dataSource);
