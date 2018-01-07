@@ -6,7 +6,13 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/beans/spring-contex.xsd">
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <bean id="nf" class="java.text.NumberFormat" factory-method="getCurrencyInstance"/>
+
+    <bean id="factory" class="javax.xml.parsers.DocumentBuilderFactory" factory-method="newInstance"/>
+
+    <bean class="javax.xml.parsers.DocumentBuilder" factory-bean="factory" factory-method="newDocumentBuilder"/>
 
     <context:component-scan base-package="edu.spring"/>
 
