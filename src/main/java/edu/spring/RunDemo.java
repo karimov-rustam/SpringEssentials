@@ -18,11 +18,11 @@ public class RunDemo {
 
         game.setHomeTeam(royals);
         game.setAwayTeam(cubs);
-        System.out.println(game.playGame());
+        game.playGame();
 
         game.setHomeTeam(cubs);
         game.setAwayTeam(redSox);
-        System.out.println(game.playGame());
+        game.playGame();
 
         context.close();
     }
