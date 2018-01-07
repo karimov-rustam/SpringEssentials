@@ -2,6 +2,7 @@ package edu.spring;
 
 import edu.spring.config.AppConfig;
 import edu.spring.entities.Game;
+import edu.spring.entities.Team;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class RunDemo {
@@ -10,19 +11,19 @@ public class RunDemo {
         AnnotationConfigApplicationContext context =
                 new AnnotationConfigApplicationContext(AppConfig.class);
 
-        Game game1 = context.getBean("game", Game.class);
-        System.out.println(game1);
+        Game game = context.getBean("game", Game.class);
+        Team royals = context.getBean("royals", Team.class);
+        Team redSox = context.getBean("redSox", Team.class);
+        Team cubs = context.getBean("cubs", Team.class);
 
-//        Game game2 = context.getBean("game", Game.class);
-//        Team royals = context.getBean("royals", Team.class);
-//        game2.setAwayTeam(royals);
-//        System.out.println(game2);
-//        System.out.println(game1);
+        game.setHomeTeam(royals);
+        game.setAwayTeam(cubs);
+        System.out.println(game.playGame());
 
-//        System.out.println("There are " + context.getBeanDefinitionCount() + " beans");
-//        for (String name :
-//                context.getBeanDefinitionNames()) {
-//            System.out.println(name);
-//        }
+        game.setHomeTeam(cubs);
+        game.setAwayTeam(redSox);
+        System.out.println(game.playGame());
+
+        context.close();
     }
 }
