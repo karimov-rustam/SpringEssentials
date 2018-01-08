@@ -30,12 +30,12 @@ public class AccountService {
         return newBalance;
     }
 
-    public BigDecimal withDraw(Long id, BigDecimal amount) {
+    public BigDecimal withdraw(Long id, BigDecimal amount) {
         return deposit(id, amount.negate());
     }
 
     public void transfer(Long fromId, Long toId, BigDecimal amount) {
-        withDraw(fromId, amount);
+        withdraw(fromId, amount);
         deposit(toId, amount);
     }
 }
