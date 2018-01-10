@@ -2,15 +2,21 @@ package edu.spring.config;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @ComponentScan(basePackages = "edu.spring")
@@ -21,28 +27,8 @@ public class AppConfig {
     @Autowired
     private Environment env;
 
-    @Bean(name = "dataSource", destroyMethod = "shutdown")
-    @Profile("test")
-    public DataSource dataSourceForTest() {
-        return new EmbeddedDatabaseBuilder()
-                .generateUniqueName(true)
-                .setType(EmbeddedDatabaseType.H2)
-                .setScriptEncoding("UTF-8")
-                .ignoreFailedDrops(true)
-                .addScript("schema.sql")
-                .addScript("data.sql")
-                .build();
-    }
-
-    @Bean(name = "transactionManager")
-    @Profile("test")
-    public PlatformTransactionManager transactionManagerForTest() {
-        return new DataSourceTransactionManager(dataSourceForTest());
-    }
-
-    @Bean(name = "dataSource")
-    @Profile("prod")
-    public DataSource dataSourceForProd() {
+    @Bean
+    public DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(env.getProperty("db.drive"));
         dataSource.setUrl(env.getProperty("db.url"));
@@ -51,9 +37,39 @@ public class AppConfig {
         return dataSource;
     }
 
-    @Bean(name = "transactionManager")
-    @Profile("prod")
-    public PlatformTransactionManager transactionManager() {
-        return new DataSourceTransactionManager(dataSourceForProd());
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+        adapter.setShowSql(true);
+        adapter.setGenerateDdl(true);
+        adapter.setDatabase(Database.MYSQL);
+        return  adapter;
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+            DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
+
+        Properties props = new Properties();
+        props.setProperty("hibernate.format_sql", String.valueOf(true));
+
+        LocalContainerEntityManagerFactoryBean emf =
+                new LocalContainerEntityManagerFactoryBean();
+        emf.setDataSource(dataSource);
+        emf.setPackagesToScan("edu.spring.entities");
+        emf.setJpaVendorAdapter(jpaVendorAdapter);
+        emf.setJpaProperties(props);
+
+        return emf;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+        return new JpaTransactionManager(emf);
+    }
+
+    @Bean
+    public BeanPostProcessor persistenceTranslation() {
+        return new PersistenceExceptionTranslationPostProcessor();
     }
 }

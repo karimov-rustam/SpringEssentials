@@ -1,12 +1,17 @@
 package edu.spring.entities;
 
+import org.hibernate.annotations.Entity;
+
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@Entity
 public class Account {
+    @Id
     private Long id;
-
     private BigDecimal balance;
+
     public Account(Long id, BigDecimal balance) {
         this.id = id;
         this.balance = balance;

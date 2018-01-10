@@ -1,73 +1,52 @@
 package edu.spring.repositories;
 
 import edu.spring.entities.Account;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
-import javax.sql.DataSource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-@Profile("test")
 public class JdbcAccountRepository implements AccountRepository {
-    private JdbcTemplate template;
     private static long nextId = 4;
 
-    @Autowired
-    public JdbcAccountRepository(DataSource dataSource) {
-        template = new JdbcTemplate(dataSource);
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public List<Account> getAccounts() {
-        String sqlTxt = "select * from account";
-        return template.query(sqlTxt, new AccountMapper());
+        return entityManager.createQuery("select a from Account a", Account.class)
+                .getResultList();
     }
 
     @Override
     public Account getAccount(Long id) {
-        String sqlTxt = "select * from account where id=?";
-        return template.queryForObject(sqlTxt, new AccountMapper(), id);
+        return entityManager.find(Account.class, id);
     }
 
     @Override
     public int getNumberOfAccounts() {
-        String sqlTxt = "select count(*) from account";
-        return template.queryForObject(sqlTxt, Integer.class);
+        String jpaTxt = "select count(a.id) from Account a";
+        Long result = (Long) entityManager.createQuery(jpaTxt).getSingleResult();
+        return result.intValue();
     }
 
     @Override
     public Long createAccount(BigDecimal initialBalance) {
-        String sqlTxt = "insert into account(id, balance) values(?, ?)";
         long id = nextId++;
-        int uc = template.update(sqlTxt, id, initialBalance);
+        entityManager.persist(new Account(id, initialBalance));
         return id;
     }
 
     @Override
     public int deleteAccount(Long id) {
-        String sqlTxt = "delete from account where id=?";
-        return template.update(sqlTxt, id);
+        entityManager.remove(getAccount(id));
+        return 1;
     }
 
     @Override
     public void updateAccount(Account account) {
-        String sqlTxt = "update account set balance = ? where id = ?";
-        template.update(sqlTxt, account.getBalance(), account.getId());
+        entityManager.merge(account);
     }
-
-    private class AccountMapper implements RowMapper<Account> {
-        @Override
-        public Account mapRow(ResultSet resultSets, int i) throws SQLException {
-            return new Account(resultSets.getLong("id"),
-                    resultSets.getBigDecimal("balance"));
-        }
-    }
-
 }
