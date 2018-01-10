@@ -20,20 +20,20 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = AppConfig.class)
 @Transactional
-public class JpaAccountRepositoryTest {
+public class AccountRepositoryTest {
 
     @Autowired
     private AccountRepository repository;
 
     @Test
     public void testGetAccounts() {
-        List<Account> accounts = repository.getAccounts();
+        List<Account> accounts = repository.findAll();
         assertThat(accounts.size(), is(3));
     }
 
     @Test
     public void testGetAccount() {
-        Account account = repository.getAccount(1L);
+        Account account = repository.findOne(1L);
         assertThat(account.getId(), is(1L));
         assertThat(new BigDecimal("100.0"),
                 is(closeTo(account.getBalance(), new BigDecimal("0.01"))));
@@ -41,39 +41,45 @@ public class JpaAccountRepositoryTest {
 
     @Test
     public void testGetNumberOfAccounts() {
-        assertThat(repository.getNumberOfAccounts(), is(3));
+        assertThat(repository.count(), is(3));
     }
 
     @Test
     public void testCreateAccount() {
-        Long id = repository.createAccount(new BigDecimal("250.0"));
+        Account account = new Account(99L, new BigDecimal("250.0"));
+        repository.save(account);
+        Long id = account.getId();
         assertThat(id, is(notNullValue()));
 
-        Account account = repository.getAccount(id);
-        assertThat(account.getId(), is(id));
-        assertThat(account.getBalance(), is(closeTo(new BigDecimal("250.0"),
+        Account again = repository.findOne(id);
+        assertThat(again.getId(), is(id));
+        assertThat(again.getBalance(), is(closeTo(new BigDecimal("250.0"),
                 new BigDecimal("0.01"))));
     }
 
     @Test
     public void testUpdateAccount() {
-        Account account = repository.getAccount(1L);
+        Account account = repository.findOne(1L);
         BigDecimal current = account.getBalance();
         BigDecimal amount = new BigDecimal("50.0");
         account.setBalance(current.add(amount));
-        repository.updateAccount(account);
+        repository.save(account);
 
-        Account again = repository.getAccount(1L);
+        Account again = repository.findOne(1L);
         assertThat(again.getBalance(), is(closeTo(current.add(amount),
                 new BigDecimal("0.01"))));
     }
 
     @Test
     public void testDeleteAccount() {
-        for (Account account :
-                repository.getAccounts()) {
-            repository.deleteAccount(account.getId());
-        }
-        assertThat(repository.getNumberOfAccounts(), is(0));
+        repository.deleteAll();
+        assertThat(repository.count(), is(0));
+    }
+
+    @Test
+    public void testAccountBalanceGTE() {
+        List<Account> accounts = repository.findAccountsByBalanceGreaterThanEqual(
+                new BigDecimal("100.0"));
+        assertThat(accounts.size(), is(3));
     }
 }

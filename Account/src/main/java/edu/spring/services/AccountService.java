@@ -17,14 +17,14 @@ public class AccountService {
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public BigDecimal getBalance(Long id) {
-        return repository.getAccount(id).getBalance();
+        return repository.findOne(id).getBalance();
     }
 
     public BigDecimal deposit(Long id, BigDecimal amount) {
-        Account account = repository.getAccount(id);
+        Account account = repository.findOne(id);
         BigDecimal newBalance = account.getBalance().add(amount);
         account.setBalance(newBalance);
-        repository.updateAccount(account);
+        repository.save(account);
         return newBalance;
     }
 

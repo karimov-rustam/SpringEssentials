@@ -1,20 +1,11 @@
 package edu.spring.repositories;
 
 import edu.spring.entities.Account;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public interface AccountRepository {
-    List<Account> getAccounts();
-
-    Account getAccount(Long id);
-
-    int getNumberOfAccounts();
-
-    Long createAccount(BigDecimal initialBalance);
-
-    int deleteAccount(Long id);
-
-    void updateAccount(Account account);
+public interface AccountRepository extends JpaRepository<Account, Long> {
+    List<Account> findAccountsByBalanceGreaterThanEqual(BigDecimal amount);
 }
