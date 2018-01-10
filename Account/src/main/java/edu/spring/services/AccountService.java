@@ -3,7 +3,6 @@ package edu.spring.services;
 import edu.spring.entities.Account;
 import edu.spring.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
 @Service @Transactional
-@Profile("test")
 public class AccountService {
 
     @Autowired

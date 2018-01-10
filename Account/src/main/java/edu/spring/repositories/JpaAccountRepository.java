@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
-public class JdbcAccountRepository implements AccountRepository {
+public class JpaAccountRepository implements AccountRepository {
     private static long nextId = 4;
 
     @PersistenceContext
